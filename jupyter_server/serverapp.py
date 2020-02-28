@@ -102,7 +102,7 @@ from jupyter_server._sysinfo import get_sys_info
 from ._tz import utcnow, utcfromtimestamp
 from .utils import url_path_join, check_pid, url_escape, urljoin, pathname2url
 
-from jupyter_server.extension.serverextension import ServerExtensionApp
+from jupyter_server.extension.serverextension import ServerExtensionApp, _get_server_extension_metadata
 
 #-----------------------------------------------------------------------------
 # Module globals
@@ -212,7 +212,7 @@ class ServerWebApplication(web.Application):
         now = utcnow()
 
         root_dir = contents_manager.root_dir
-        home = py3compat.str_to_unicode(os.path.expanduser('~'), encoding=sys.getfilesystemencoding()) 
+        home = py3compat.str_to_unicode(os.path.expanduser('~'), encoding=sys.getfilesystemencoding())
         if root_dir.startswith(home + os.path.sep):
             # collapse $HOME to ~
             root_dir = '~' + root_dir[len(home):]
@@ -1102,7 +1102,7 @@ class ServerApp(JupyterApp):
     def _default_browser_open_file(self):
         basename = "jpserver-%s-open.html" % os.getpid()
         return os.path.join(self.runtime_dir, basename)
-    
+
     pylab = Unicode('disabled', config=True,
         help=_("""
         DISABLED: use %pylab or %matplotlib in the notebook to enable matplotlib.
@@ -1487,6 +1487,17 @@ class ServerApp(JupyterApp):
                 self.config.ServerApp.jpserver_extensions.update({modulename: enabled})
                 self.jpserver_extensions.update({modulename: enabled})
 
+        # Load configuration from ExtensionApp's they affect
+        # the ServerApp class.
+        for modulename in sorted(self.jpserver_extensions):
+            _, metadata = _get_server_extension_metadata(modulename)
+            app_obj = metadata[0].get('app', None)
+            if issubclass(app_obj, JupyterApp):
+                app = app_obj(parent=self)
+                app.update_config(app.config)
+                app.load_config_file()
+                self.update_config(app.config)
+
     def init_server_extensions(self):
         """Load any extensions specified by config.
 
@@ -1654,13 +1665,18 @@ class ServerApp(JupyterApp):
             Application. This will set the http_server attribute of this class.
         """
         self._init_asyncio_patch()
+        # Parse command line, load ServerApp config files,
+        # and update ServerApp config.
         super(ServerApp, self).initialize(argv)
+        # Then, use extensions' config loading mechanism to
+        # update config. ServerApp config takes precedence.
+        if load_extensions:
+            self.init_server_extension_config()
+        # Initialize all components of the ServerApp.
         self.init_logging()
         if self._dispatching:
             return
         self.init_configurables()
-        if load_extensions:
-            self.init_server_extension_config()
         self.init_components()
         self.init_webapp()
         if new_httpserver:
