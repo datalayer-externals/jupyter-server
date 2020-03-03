@@ -1315,7 +1315,6 @@ class ServerApp(JupyterApp):
             self.ssl_options['ca_certs'] = self.client_ca
         if not self.ssl_options:
             # could be an empty dict or None
-            # None indicates no SSL config
             self.ssl_options = None
         else:
             # SSL may be missing, so only import it if it's to be used
@@ -1329,6 +1328,7 @@ class ServerApp(JupyterApp):
             )
             if self.ssl_options.get('ca_certs', False):
                 self.ssl_options.setdefault('cert_reqs', ssl.CERT_REQUIRED)
+            ssl_options = self.ssl_options
 
         self.login_handler_class.validate_security(self, ssl_options=self.ssl_options)
 
