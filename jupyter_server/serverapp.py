@@ -1614,22 +1614,23 @@ class ServerApp(JupyterApp):
             except AttributeError:
                 # For backwards compatibility, we will still look for non
                 # underscored loading functions.
-                func = getattr(extension, 'load_jupyter_server_extension')
-                func(self)
-                warn_msg = _(
-                    "{extkey} is enabled. "
-                    "`load_jupyter_server_extension` function "
-                    "was found but `_load_jupyter_server_extension`"
-                    "is preferred.".format(extkey=extkey)
-                )
-                self.log.warning(warn_msg)
-            except AttributeError:
-                warn_msg = _(
-                    "{extkey} is enabled but no "
-                    "`_load_jupyter_server_extension` function "
-                    "was found.".format(extkey=extkey)
-                )
-                self.log.warning(warn_msg)
+                try:
+                    func = getattr(extension, 'load_jupyter_server_extension')
+                    func(self)
+                    warn_msg = _(
+                        "{extkey} is enabled. "
+                        "`load_jupyter_server_extension` function "
+                        "was found but `_load_jupyter_server_extension`"
+                        "is preferred.".format(extkey=extkey)
+                    )
+                    self.log.warning(warn_msg)
+                except AttributeError:
+                    warn_msg = _(
+                        "{extkey} is enabled but no "
+                        "`_load_jupyter_server_extension` function "
+                        "was found.".format(extkey=extkey)
+                    )
+                    self.log.warning(warn_msg)
 
     def init_mime_overrides(self):
         # On some Windows machines, an application has registered incorrect
