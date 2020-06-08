@@ -14,13 +14,7 @@ To install the latest release locally, make sure you have
 
     $ pip install jupyter_server
 
-Jupyter Server currently supports the following Python versions:
-
-Platform | Python
---- | ---
-Linux | >=3.5
-OSX | >=3.5
-Windows | >=3.7
+Jupyter Server currently supports Python>=3.5 on Linux, OSX and Windows.
 
 ### Versioning and Branches
 
@@ -50,7 +44,7 @@ Where: [calpoly/jupyter Zoom](https://zoom.us/my/jovyan)
 What: [Meeting notes](https://github.com/jupyter/jupyter_server/issues/126)
 
 * When: Thursdays [8:00am, Pacific time](https://www.thetimezoneconverter.com/?t=8%3A00%20am&tz=San%20Francisco&)
-* Where: [Jupyter Zoom](https://calpoly.zoom.us/my/jupyter)
+* Where: [Jovyan Zoom](https://zoom.us/my/jovyan)
 * What: [Meeting notes](https://github.com/jupyter/jupyter_server/issues/126)
 
 See our tentative [roadmap here](https://github.com/jupyter/jupyter_server/issues/127).

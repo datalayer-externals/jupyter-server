@@ -19,12 +19,6 @@ import sys
 name = "jupyter_server"
 
 # Minimal Python version sanity check
-#if sys.platform == 'win32':
-#    if sys.version_info < (3,7):
-#        error = "ERROR: %s requires Python version 3.7 or above." % name
-#        print(error, file=sys.stderr)
-#        sys.exit(1)
-#else:
 if sys.version_info < (3,5):
     error = "ERROR: %s requires Python version 3.5 or above." % name
     print(error, file=sys.stderr)
@@ -81,8 +75,6 @@ for more information.
     install_requires = [
         'jinja2',
         'tornado>=5.0',
-        # pyzmq>=17 is not technically necessary,
-        # but hopefully avoids incompatibilities with Tornado 5. April 2018
         'pyzmq>=17',
         'ipython_genutils',
         'traitlets>=4.2.1',
