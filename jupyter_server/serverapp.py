@@ -900,13 +900,7 @@ class ServerApp(JupyterApp):
        """
     )
 
-    open_browser = Bool(False, config=True,
-                        help="""Whether to open in a browser after starting.
-                        The specific browser used is platform dependent and
-                        determined by the python standard library `webbrowser`
-                        module, unless it is overridden using the --browser
-                        (ServerApp.browser) configuration option.
-                        """)
+    open_browser = False
 
     browser = Unicode(u'', config=True,
                       help="""Specify what command to use to invoke a web
