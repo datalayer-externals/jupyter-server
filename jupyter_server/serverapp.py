@@ -271,7 +271,7 @@ class ServerWebApplication(web.Application):
             server_root_dir=root_dir,
             jinja2_env=env,
             terminals_available=False,  # Set later if terminals are available
-            serverapp=self
+            serverapp=jupyter_app
         )
 
         # allow custom overrides for the tornado web app.
@@ -1306,7 +1306,6 @@ class ServerApp(JupyterApp):
             import ssl
             # PROTOCOL_TLS selects the highest ssl/tls protocol version that both the client and
             # server support. When PROTOCOL_TLS is not available use PROTOCOL_SSLv23.
-            # PROTOCOL_TLS is new in version 2.7.13, 3.5.3 and 3.6
             self.ssl_options.setdefault(
                 'ssl_version',
                 getattr(ssl, 'PROTOCOL_TLS', ssl.PROTOCOL_SSLv23)
@@ -1352,7 +1351,7 @@ class ServerApp(JupyterApp):
         if not ip:
             ip = self.ip if self.ip else 'localhost'
         if not path:
-            path = url_path_join(self.base_url, self.default_url)
+            path = self.default_url
         # Build query string.
         if token:
             token = urllib.parse.urlencode({'token': token})

@@ -1,17 +1,19 @@
 import sys
 import re
+import logging
+from urllib.parse import urljoin
 
 from jinja2 import Environment, FileSystemLoader
 
 from traitlets import (
+    HasTraits,
     Unicode,
     List,
     Dict,
-    Bool,
-    default,
-    validate
+    default
 )
 from traitlets.config import Config
+from tornado.log import LogFormatter
 
 from jupyter_core.application import JupyterApp
 
@@ -81,7 +83,7 @@ def _preparse_for_stopping_flags(Application, argv):
         app.exit(0)
 
 
-class ExtensionAppJinjaMixin:
+class ExtensionAppJinjaMixin(HasTraits):
     """Use Jinja templates for HTML templates on top of an ExtensionApp."""
 
     jinja2_options = Dict(
@@ -92,7 +94,6 @@ class ExtensionAppJinjaMixin:
     def _prepare_templates(self):
         # Get templates defined in a subclass.
         self.initialize_templates()
-
         # Add templates to web app settings if extension has templates.
         if len(self.template_paths) > 0:
             self.settings.update({
@@ -176,10 +177,27 @@ class ExtensionApp(JupyterApp):
     # A ServerApp is not defined yet, but will be initialized below.
     serverapp = None
 
-    @property
-    def static_url_prefix(self):
-        return "/static/{name}/".format(
-            name=self.name)
+    _log_formatter_cls = LogFormatter
+
+    @default('log_level')
+    def _default_log_level(self):
+        return logging.INFO
+
+    @default('log_format')
+    def _default_log_format(self):
+        """override default log format to include date & time"""
+        return u"%(color)s[%(levelname)1.1s %(asctime)s.%(msecs).03d %(name)s]%(end_color)s %(message)s"
+
+    static_url_prefix = Unicode(
+        help="""Url where the static assets for the extension are served."""
+    ).tag(config=True)
+
+    @default('static_url_prefix')
+    def _default_static_url_prefix(self):
+        static_url = "static/{name}/".format(
+            name=self.name
+        )
+        return urljoin(self.serverapp.base_url, static_url)
 
     static_paths = List(Unicode(),
         help="""paths to search for serving static files.
@@ -237,7 +255,7 @@ class ExtensionApp(JupyterApp):
         # Add static and template paths to settings.
         self.settings.update({
             "{}_static_paths".format(self.name): self.static_paths,
-            "{}".format(self.name): self
+            "{}".format(self.name): self,
         })
 
         # Get setting defined by subclass using initialize_settings method.
@@ -415,7 +433,7 @@ class ExtensionApp(JupyterApp):
         if argv is None:
             args = sys.argv[1:]  # slice out extension config.
         else:
-            args = []
+            args = argv
         # Check for subcommands
         subapp = _preparse_for_subcommand(cls, args)
         if subapp:

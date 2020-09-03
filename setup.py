@@ -17,11 +17,7 @@ setup_args = dict(
     long_description = README,
     version          = VERSION,
     packages         = find_packages('.'),
-    package_data     = {
-        'jupyter_server' : ['templates/*'],
-        'jupyter_server.i18n': ['*/LC_MESSAGES/*.*'],
-        'jupyter_server.services.api': ['api.yaml'],
-    },
+    include_package_data = True,
     author           = 'Jupyter Development Team',
     author_email     = 'jupyter@googlegroups.com',
     url              = 'http://jupyter.org',
@@ -34,7 +30,6 @@ setup_args = dict(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -61,6 +56,7 @@ setup_args = dict(
                  'pytest-console-scripts', 'ipykernel'],
         'test:sys_platform == "win32"': ['nose-exclude'],
     },
+    python_requires = '>=3.6',
     entry_points = {
         'console_scripts': [
             'jupyter-server = jupyter_server.serverapp:main',
