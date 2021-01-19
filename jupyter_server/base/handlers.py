@@ -35,6 +35,8 @@ from jupyter_server.i18n import combine_translations
 from jupyter_server.utils import ensure_async, url_path_join, url_is_absolute, url_escape
 from jupyter_server.services.security import csp_report_uri
 
+from torndsession.session import SessionMixin
+
 #-----------------------------------------------------------------------------
 # Top-level handlers
 #-----------------------------------------------------------------------------
@@ -53,7 +55,7 @@ def log():
     else:
         return app_log
 
-class AuthenticatedHandler(web.RequestHandler):
+class AuthenticatedHandler(SessionMixin, web.RequestHandler):
     """A RequestHandler with an authenticated user."""
 
     @property
