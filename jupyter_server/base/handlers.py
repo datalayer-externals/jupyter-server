@@ -90,6 +90,18 @@ class AuthenticatedHandler(SessionMixin, web.RequestHandler):
                 # for example, so just ignore)
                 self.log.debug(e)
 
+    def get_session_id(self):
+        return self.session.id
+
+    def get_session(self):
+        return self.session
+
+    def get_sessions(self):
+        return self.session.driver._data_handler
+
+    def get_sessions_count(self):
+        return len(self.session.driver._data_handler)
+
     def force_clear_cookie(self, name, path="/", domain=None):
         """Deletes the cookie with the given name.
 
