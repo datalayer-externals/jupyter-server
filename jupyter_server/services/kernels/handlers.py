@@ -432,10 +432,12 @@ class ZMQChannelsHandler(AuthenticatedZMQStreamHandler):
         else:
             stream = self.channels[channel]
             if msg['metadata'] and msg['metadata']['cellId']:
-                for ws in self._open_sessions.values():
-                    msg['channel'] = 'iopub'
+                for session_key, ws in self._open_sessions.items():
                     try:
-                        ws.write_message(msg)
+                        if ws != self:
+                            msg['channel'] = 'iopub'
+                            msg['parent_header'] = { 'session': session_key.split(':')[0] }
+                            ws.write_message(msg)
                     except Exception as e:
 #                        self.log.exception(e)
                         pass
