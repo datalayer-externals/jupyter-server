@@ -431,6 +431,14 @@ class ZMQChannelsHandler(AuthenticatedZMQStreamHandler):
             self.log.warning('Received message of type "%s", which is not allowed. Ignoring.' % mt)
         else:
             stream = self.channels[channel]
+            if msg['metadata'] and msg['metadata']['cellId']:
+                for ws in self._open_sessions.values():
+                    msg['channel'] = 'iopub'
+                    try:
+                        ws.write_message(msg)
+                    except Exception as e:
+#                        self.log.exception(e)
+                        pass
             self.session.send(stream, msg)
 
     def _on_zmq_reply(self, stream, msg_list):
