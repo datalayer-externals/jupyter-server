@@ -32,6 +32,7 @@ class SessionRootHandler(APIHandler):
         sm = self.session_manager
 
         model = self.get_json_body()
+
         if model is None:
             raise web.HTTPError(400, "No JSON data provided")
 
@@ -55,6 +56,10 @@ class SessionRootHandler(APIHandler):
         kernel_name = kernel.get('name', None)
         kernel_id = kernel.get('id', None)
 
+        params = model.get('params', None)
+        # Ensure we params are strings.
+        params = {str(key): str(value) for key, value in params.items()}
+
         if not kernel_id and not kernel_name:
             self.log.debug("No kernel specified, using default kernel")
             kernel_name = None
@@ -67,7 +72,7 @@ class SessionRootHandler(APIHandler):
                 model = await sm.create_session(
                                       path=path, kernel_name=kernel_name,
                                       kernel_id=kernel_id, name=name,
-                                      type=mtype)
+                                      type=mtype, params=params)
             except NoSuchKernel:
                 msg = ("The '%s' kernel is not available. Please pick another "
                        "suitable kernel instead, or install that kernel." % kernel_name)

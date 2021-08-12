@@ -163,7 +163,7 @@ class MappingKernelManager(MultiKernelManager):
             os_path = os.path.dirname(os_path)
         return os_path
 
-    async def start_kernel(self, kernel_id=None, path=None, **kwargs):
+    async def start_kernel(self, kernel_id=None, path=None, params=None, **kwargs):
         """Start a kernel for a session and return its kernel_id.
 
         Parameters
@@ -184,6 +184,7 @@ class MappingKernelManager(MultiKernelManager):
                 kwargs['cwd'] = self.cwd_for_path(path)
             if kernel_id is not None:
                 kwargs['kernel_id'] = kernel_id
+            kwargs['params'] = params
             kernel_id = await ensure_async(self.pinned_superclass.start_kernel(self, **kwargs))
             self._kernel_connections[kernel_id] = 0
             self._kernel_ports[kernel_id] = self._kernels[kernel_id].ports
