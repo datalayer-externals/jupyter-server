@@ -184,6 +184,14 @@ class MappingKernelManager(MultiKernelManager):
                 kwargs['cwd'] = self.cwd_for_path(path)
             if kernel_id is not None:
                 kwargs['kernel_id'] = kernel_id
+            kwargs['cache_size'] = '3000'
+            kwargs['matplotlib'] = 'auto'
+            """
+            kwargs['params'] = {
+                'cache_size': '2000',
+                'matplotlib': 'auto',
+            }
+            """
             kernel_id = await ensure_async(self.pinned_superclass.start_kernel(self, **kwargs))
             self._kernel_connections[kernel_id] = 0
             self._kernel_ports[kernel_id] = self._kernels[kernel_id].ports
