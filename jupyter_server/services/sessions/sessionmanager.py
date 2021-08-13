@@ -82,21 +82,21 @@ class SessionManager(LoggingConfigurable):
         "Create a uuid for a new session"
         return str(uuid.uuid4())
 
-    async def create_session(self, path=None, name=None, type=None, kernel_name=None, kernel_id=None):
+    async def create_session(self, path=None, name=None, type=None, kernel_name=None, kernel_id=None, params=None):
         """Creates a session and returns its model"""
         session_id = self.new_session_id()
         if kernel_id is not None and kernel_id in self.kernel_manager:
             pass
         else:
-            kernel_id = await self.start_kernel_for_session(session_id, path, name, type, kernel_name)
+            kernel_id = await self.start_kernel_for_session(session_id, path, name, type, kernel_name, params)
         result = await self.save_session(session_id, path=path, name=name, type=type, kernel_id=kernel_id)
         return result
 
-    async def start_kernel_for_session(self, session_id, path, name, type, kernel_name):
+    async def start_kernel_for_session(self, session_id, path, name, type, kernel_name, params):
         """Start a new kernel for a given session."""
         # allow contents manager to specify kernels cwd
         kernel_path = self.contents_manager.get_kernel_path(path=path)
-        kernel_id = await self.kernel_manager.start_kernel(path=kernel_path, kernel_name=kernel_name)
+        kernel_id = await self.kernel_manager.start_kernel(path=kernel_path, kernel_name=kernel_name, params=params)
         return kernel_id
 
     async def save_session(self, session_id, path=None, name=None, type=None, kernel_id=None):
