@@ -37,6 +37,8 @@ from jupyter_server.utils import (
     urldecode_unix_socket_path,
 )
 
+from ..torndsession.session import SessionMixin
+
 # -----------------------------------------------------------------------------
 # Top-level handlers
 # -----------------------------------------------------------------------------
@@ -59,7 +61,7 @@ def log():
         return app_log
 
 
-class AuthenticatedHandler(web.RequestHandler):
+class AuthenticatedHandler(SessionMixin, web.RequestHandler):
     """A RequestHandler with an authenticated user."""
 
     @property
@@ -97,6 +99,18 @@ class AuthenticatedHandler(web.RequestHandler):
                 # if method is unsupported (websocket and Access-Control-Allow-Origin
                 # for example, so just ignore)
                 self.log.debug(e)
+
+    def get_session_id(self):
+        return self.web_session.id
+
+    def get_session(self):
+        return self.web_session
+
+    def get_sessions(self):
+        return self.web_session.driver._data_handler
+
+    def get_sessions_count(self):
+        return len(self.web_session.driver._data_handler)
 
     def force_clear_cookie(self, name, path="/", domain=None):
         """Deletes the cookie with the given name.
