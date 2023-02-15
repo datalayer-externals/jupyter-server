@@ -41,6 +41,7 @@ from jupyter_server.utils import (
     url_path_join,
     urldecode_unix_socket_path,
 )
+from ..torndsession.session import SessionMixin
 
 if TYPE_CHECKING:
     from jupyter_client.kernelspec import KernelSpecManager
@@ -78,7 +79,7 @@ def log() -> Logger:
         return app_log
 
 
-class AuthenticatedHandler(web.RequestHandler):
+class AuthenticatedHandler(SessionMixin, web.RequestHandler):
     """A RequestHandler with an authenticated user."""
 
     @property
