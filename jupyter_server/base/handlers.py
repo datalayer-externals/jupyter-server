@@ -41,7 +41,7 @@ from jupyter_server.utils import (
     url_path_join,
     urldecode_unix_socket_path,
 )
-from ..torndsession.session import SessionMixin
+from jupyter_server.torndsession.session import SessionMixin
 
 if TYPE_CHECKING:
     from jupyter_client.kernelspec import KernelSpecManager
