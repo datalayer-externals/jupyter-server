@@ -12,6 +12,7 @@ import os
 import pathlib
 import typing as t
 import warnings
+import uuid
 from collections import defaultdict
 from datetime import datetime, timedelta
 from functools import partial, wraps
@@ -223,6 +224,12 @@ class MappingKernelManager(MultiKernelManager):
             The name identifying which kernel spec to launch. This is ignored if
             an existing kernel is returned, but it may be checked in the future.
         """
+        if not path:
+            path = str(uuid.uuid4())
+        if not kwargs.get("env", None):
+            env = {**os.environ, "JPY_SESSION_NAME": path}
+            kwargs["env"] = env
+        self.log.info('------------- JPY_SESSION_NAME', kwargs["env"]["JPY_SESSION_NAME"])
         if kernel_id is None or kernel_id not in self:
             if path is not None:
                 kwargs["cwd"] = self.cwd_for_path(path, env=kwargs.get("env", {}))
