@@ -526,6 +526,6 @@ class SessionManager(LoggingConfigurable):
         record = KernelSessionRecord(session_id=session_id)
         self._pending_sessions.update(record)
         session = await self.get_session(session_id=session_id)
-        await ensure_async(self.kernel_manager.shutdown_kernel(session["kernel"]["id"]))
+#        await ensure_async(self.kernel_manager.shutdown_kernel(session["kernel"]["id"]))
         self.cursor.execute("DELETE FROM session WHERE session_id=?", (session_id,))
         self._pending_sessions.remove(record)
