@@ -207,7 +207,7 @@ class MappingKernelManager(MultiKernelManager):
     # TODO DEC 2022: Revise the type-ignore once the signatures have been changed upstream
     # https://github.com/jupyter/jupyter_client/pull/905
     async def _async_start_kernel(  # type:ignore[override]
-        self, *, kernel_id: str | None = None, path: ApiPath | None = None, **kwargs: str
+        self, *, kernel_id: str | None = None, path: ApiPath | None = None, params = None, **kwargs: str
     ) -> str:
         """Start a kernel for a session and return its kernel_id.
 
@@ -220,6 +220,8 @@ class MappingKernelManager(MultiKernelManager):
         path : API path
             The API path (unicode, '/' delimited) for the cwd.
             Will be transformed to an OS path relative to root_dir.
+        params :
+            The params.
         kernel_name : str
             The name identifying which kernel spec to launch. This is ignored if
             an existing kernel is returned, but it may be checked in the future.
@@ -229,13 +231,14 @@ class MappingKernelManager(MultiKernelManager):
         if not kwargs.get("env", None):
             env = {**os.environ, "JPY_SESSION_NAME": path}
             kwargs["env"] = env
-        self.log.info('------------- JPY_SESSION_NAME', kwargs["env"]["JPY_SESSION_NAME"])
+        # self.log.info('------------- JPY_SESSION_NAME', kwargs["env"]["JPY_SESSION_NAME"])
         if kernel_id is None or kernel_id not in self:
             if path is not None:
                 kwargs["cwd"] = self.cwd_for_path(path, env=kwargs.get("env", {}))
             if kernel_id is not None:
                 assert kernel_id is not None, "Never Fail, but necessary for mypy "
                 kwargs["kernel_id"] = kernel_id
+            kwargs['params'] = params
             kernel_id = await self.pinned_superclass._async_start_kernel(self, **kwargs)
             self._kernel_connections[kernel_id] = 0
             task = asyncio.create_task(self._finish_kernel_start(kernel_id))

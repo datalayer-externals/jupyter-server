@@ -267,6 +267,7 @@ class SessionManager(LoggingConfigurable):
         type: Optional[str] = None,
         kernel_name: Optional[KernelName] = None,
         kernel_id: Optional[str] = None,
+        params = None
     ) -> Dict[str, Any]:
         """Creates a session and returns its model
 
@@ -283,7 +284,7 @@ class SessionManager(LoggingConfigurable):
             pass
         else:
             kernel_id = await self.start_kernel_for_session(
-                session_id, path, name, type, kernel_name
+                session_id, path, name, type, kernel_name, params
             )
         record.kernel_id = kernel_id
         self._pending_sessions.update(record)
@@ -319,6 +320,7 @@ class SessionManager(LoggingConfigurable):
         name: Optional[ModelName],
         type: Optional[str],
         kernel_name: Optional[KernelName],
+        params
     ) -> str:
         """Start a new kernel for a given session.
 
@@ -344,6 +346,7 @@ class SessionManager(LoggingConfigurable):
             path=kernel_path,
             kernel_name=kernel_name,
             env=kernel_env,
+            params=params
         )
         return cast(str, kernel_id)
 
