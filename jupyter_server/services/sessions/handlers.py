@@ -77,7 +77,7 @@ class SessionRootHandler(SessionsAPIHandler):
         kernel_name = kernel.get("name", None)
         kernel_id = kernel.get("id", None)
 
-        params = model.get('params', None)
+        params = model.get('params', {})
         # Ensure all params are strings.
         params = {str(key): str(value) for key, value in params.items()}
 
